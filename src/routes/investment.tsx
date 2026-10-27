@@ -9,10 +9,12 @@ import { images } from "@/lib/data";
 type Search = { price?: number; yield?: number };
 
 export const Route = createFileRoute("/investment")({
-  validateSearch: (s: Record<string, unknown>): Search => ({
-    price: s.price ? Number(s.price) : undefined,
-    yield: s.yield ? Number(s.yield) : undefined,
-  }),
+  validateSearch: (s: Record<string, unknown>): Search => {
+    const out: Search = {};
+    if (s["price"]) out.price = Number(s["price"]);
+    if (s["yield"]) out.yield = Number(s["yield"]);
+    return out;
+  },
   head: () => ({
     meta: [
       { title: "Investment Calculator — AUREON ESTATES" },
@@ -33,7 +35,7 @@ export function projectReturns(price: number, yieldPct: number, growthPct: numbe
     rent += value * (yieldPct / 100);
     value *= 1 + growthPct / 100;
   }
-  const last = rows[rows.length - 1];
+  const last = rows[rows.length - 1]!;
   return { rows, annualRent: price * (yieldPct / 100), finalValue: last.value, totalRent: last.rent, totalReturn: last.value - price + last.rent };
 }
 
